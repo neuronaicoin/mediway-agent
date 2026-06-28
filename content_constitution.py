@@ -85,8 +85,8 @@ CONSTITUTION = {
     "publishing_plan": {
         "posts_per_day": 4,
         "breakdown": {
-            "carousel": 2,   # veri gösteriyor: carousel en iyi performans
-            "reels": 2,
+            "carousel": 1,   # carousel'e API müzik koyamıyor — azalt
+            "reels": 3,      # Reels sesli/video, öne çıkar
         },
         "stories_per_day": 5,
         # Agent her 4 SAATTE bir uyanır (günde 6 döngü), ama günlük
