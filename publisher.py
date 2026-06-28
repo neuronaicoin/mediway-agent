@@ -39,7 +39,12 @@ import requests
 # AYARLAR
 # ----------------------------------------------------------------
 IG_USER_ID   = "17841414815930110"
-ACCESS_TOKEN = os.environ.get("IG_TOKEN")
+# Otomatik token yenileme: FB_APP_ID + FB_APP_SECRET varsa token'ı uzun ömürlü yapar
+try:
+    from token_refresh import REFRESHED_TOKEN
+    ACCESS_TOKEN = REFRESHED_TOKEN or os.environ.get("IG_TOKEN")
+except Exception:
+    ACCESS_TOKEN = os.environ.get("IG_TOKEN")
 
 FB_PAGE_ID    = os.environ.get("FB_PAGE_ID")
 FB_PAGE_TOKEN = os.environ.get("FB_PAGE_TOKEN")
