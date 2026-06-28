@@ -1,0 +1,29 @@
+# ================================================================
+#  MEDIWAY AGENT — DOCKERFILE (Railway için)
+#  ffmpeg + fontlar + Python bağımlılıkları garantili kurulur.
+# ================================================================
+
+FROM python:3.12-slim
+
+# Sistem paketleri: ffmpeg (Reels için ŞART) + DejaVu fontları
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        ffmpeg \
+        fonts-dejavu-core \
+        fonts-dejavu-extra && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Python çıktısı anında loglara aksın (buffer'da beklemesin)
+ENV PYTHONUNBUFFERED=1
+
+# Önce requirements (cache için)
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Tüm proje dosyaları
+COPY . .
+
+# Agent'ı başlat
+CMD ["python", "scheduler.py"]
