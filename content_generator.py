@@ -79,7 +79,9 @@ HASHTAGS = [
 ]
 
 # Güvenlik ağı (şablon için)
-FORBIDDEN = ["ücretsiz", "bedava", "free", "ücretsizdir", "14 dil", "klinik"]
+FORBIDDEN = ["ücretsiz", "bedava", "free", "ücretsizdir", "14 dil", "klinik",
+             "malı katlıyor", "kapına", "tüm gelir senin",
+             "kazancın erken biter", "almasına izin verme"]
 MAX_HASHTAGS = 4
 
 
@@ -119,18 +121,18 @@ def _template_post(post_type="carousel"):
                 {"slide": 3, "text": "MediWay ile değişir:\n" + benefits},
                 {"slide": 4, "text": cta},
             ],
-            "caption": f"{hook}\n\n{tags}",
+            "caption": f"{hook}\n\nwww.mediwayturkey.com\n\n{tags}",
         }
     elif post_type == "reels":
         content = {
             "type": "REELS",
             "screen_text": hook,
-            "caption": f"{body}\n\n{cta}\n\n{tags}",
+            "caption": f"{body}\n\n{cta}\n\nwww.mediwayturkey.com\n\n{tags}",
         }
     else:  # story
         content = {
             "type": "STORY",
-            "screen_text": f"{hook}\n\n👉 üye ol, link bio'da",
+            "screen_text": f"{hook}\n\nÜye ol, link bio'da\nwww.mediwayturkey.com",
         }
 
     ok, _ = check_rules(str(content))
