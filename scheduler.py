@@ -52,7 +52,7 @@ SAMPLE_VIDEOS = sorted(glob.glob("*video.mp4")) or sorted(glob.glob("*.mp4"))
 
 def log(msg):
     ts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    print(f"[{ts}] {msg}")
+    print(f"[{ts}] {msg}", flush=True)
 
 
 # ----------------------------------------------------------------
