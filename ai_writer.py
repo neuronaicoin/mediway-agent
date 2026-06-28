@@ -47,6 +47,8 @@ FORBIDDEN_PATTERNS = [
     "ücretsiz", "bedava", "free", "ücretsizdir",
     "14 dil", "14 farklı dil", "14 dilde",
     "klinik",
+    "malı katlıyor", "kapına", "tüm gelir senin",
+    "kazancın erken biter", "almasına izin verme",
 ]
 MAX_HASHTAGS = CONSTITUTION["content_style"]["max_hashtags"]
 
@@ -78,11 +80,29 @@ Değer önerileri:
 {b2b}
 
 # İÇERİK TARZI
-- Ton: {c['content_style']['tone']}
-- Dil: Türkçe
-- Yapı: dikkat çeken açılış → problemi hatırlat → çözümü sun → net fayda → eyleme çağrı (üye ol)
+- Ton: POZİTİF, MOTİVE EDİCİ, profesyonel. Sağlayıcıyı küçük düşürmeden, \
+ona fırsat ve kazanç gösteren bir dil kullan.
+- Dil: Türkçe, akıcı ve kurumsal
+- Yapı: dikkat çeken açılış → fırsatı göster → çözümü sun → net fayda → eyleme çağrı (üye ol)
 - Öncelik metriği: BEĞENİ DEĞİL, kaydetme (saves) ve paylaşma (shares). İçeriği \
 paylaşılası ve kaydedilesi yap.
+
+# TON VE İFADE KURALLARI (ÇOK ÖNEMLİ)
+ASLA şu kaba/yanlış ifadeleri veya benzerlerini kullanma:
+- "malı katlıyor", "mal" gibi kaba ticari ifadeler
+- "hasta kapına gelir", "kapına" — bunun yerine "size ulaşır", "sizi bulur"
+- "tüm gelir senin", "kazancın senin" — bunun yerine "komisyon yok, kazancınız sizin"
+- "kazancın erken biter", "para bitince" gibi olumsuz/tehdit edici ifadeler
+- "rakiplerin almasına izin verme", "rakibin önde" gibi rekabet-korku dili
+DOĞRU yaklaşım: pozitif fırsat dili. Örnekler:
+- "Yerinizi alın, yabancı hastalara daha fazla görünün"
+- "Uluslararası hastalar sizi kolayca bulsun"
+- "Markanızı dünya sahnesine taşıyın"
+- "Komisyon yok — gelen hasta tamamen sizin"
+
+# ZORUNLU: SİTE ADRESİ
+Her caption'ın ve her story metninin SONUNA mutlaka şunu ekle (hashtag'lerden önce):
+www.mediwayturkey.com
 
 # KESİN KURALLAR (ASLA İHLAL ETME)
 {rules}
