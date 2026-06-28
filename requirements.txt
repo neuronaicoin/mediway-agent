@@ -1,0 +1,8 @@
+# MediWay Agent — Python bağımlılıkları
+requests>=2.31.0
+pillow>=10.0.0
+anthropic>=0.40.0
+
+# NOT: ffmpeg ve DejaVu fontları sistem paketidir, pip ile gelmez.
+# Railway'de bunlar nixpacks.toml ile otomatik kurulur.
+# Lokal kurulumda ayrıca ffmpeg gerekir (HANDOVER.md'ye bak).

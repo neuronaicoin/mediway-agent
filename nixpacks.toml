@@ -1,0 +1,13 @@
+# ================================================================
+#  RAILWAY / NIXPACKS YAPILANDIRMASI
+#  Railway bu dosyayı okuyup gerekli sistem paketlerini kurar.
+# ================================================================
+#  - ffmpeg: Reels videolarına metin basmak için (şart)
+#  - dejavu_fonts: Türkçe karakterli görsel/video metni için
+# ================================================================
+
+[phases.setup]
+nixPkgs = ["ffmpeg", "dejavu_fonts"]
+
+[start]
+cmd = "python scheduler.py"
