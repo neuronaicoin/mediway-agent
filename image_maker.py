@@ -106,7 +106,7 @@ def make_slide(text, filename, slide_num=None, total=None):
     for line in lines:
         bbox = draw.textbbox((0, 0), line, font=font)
         line_w = bbox[2] - bbox[0]
-        x = (W - line_w) // 2
+        x = (W - line_w) // 2 - bbox[0]
         draw.text((x, y), line, font=font, fill=BRAND["text_color"])
         y += line_height
 
