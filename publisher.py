@@ -199,6 +199,8 @@ def publish_carousel(image_paths, caption):
         for path in image_paths:
             url, fname = upload_to_site(path)
             uploaded.append(fname)
+            # URL'nin CDN'de hazır olması için kısa bekleme
+            time.sleep(1)
             r = requests.post(
                 f"{BASE_URL}/{IG_USER_ID}/media",
                 data={
@@ -208,11 +210,17 @@ def publish_carousel(image_paths, caption):
                 },
             ).json()
             if "error" in r:
-                print(f"  ❌ Child container hatası: {r['error'].get('message')}")
-                return None
+                # Bu slaytta sorun varsa atla, diğerleriyle devam et
+                print(f"  ⚠️ Slayt atlandı ({r['error'].get('message')})")
+                continue
             child_ids.append(r["id"])
             print(f"  ✅ Slayt container: {r['id']}")
             time.sleep(2)
+
+        # En az 2 slayt olmalı (carousel için)
+        if len(child_ids) < 2:
+            print(f"  ❌ Yeterli geçerli slayt yok ({len(child_ids)}). Carousel iptal.")
+            return None
 
         # 2) Parent carousel container
         parent = requests.post(
