@@ -38,7 +38,7 @@ except ImportError:
     _SDK_OK = False
 
 # Model — tek satırda değiştirilebilir (Haiku ucuz+hızlı, Sonnet daha kaliteli)
-MODEL = "claude-haiku-4-5"
+MODEL = "claude-sonnet-4-6"   # Sonnet: daha akıllı, kaliteli içerik
 
 API_KEY = os.environ.get("ANTHROPIC_API_KEY")
 
@@ -180,10 +180,22 @@ def generate_post(post_type="carousel", performance_summary="", max_retries=3):
             f"Tutmuş içeriğin tarzını/konusunu çoğalt, tutmayanı tekrar etme."
         )
 
+    # A/B TESTİ (Aşama 4): Her üretimde farklı bir hook stili dene.
+    import random as _r
+    HOOK_STYLES = [
+        "Çarpıcı bir SORU ile başla (okuyucuyu içine çeken).",
+        "Şaşırtıcı bir İSTATİSTİK/gerçek ile başla.",
+        "Yaygın bir HATA/yanlış inanışı vurgulayarak başla.",
+        "Güçlü bir FAYDA vaadiyle başla (önce-sonra hissi).",
+        "Kısa bir HİKAYE/senaryo ile başla (ilişki kurulabilir).",
+    ]
+    chosen_hook = _r.choice(HOOK_STYLES)
+
     user_msg = (
         f"Bir {post_type.upper()} içeriği üret. "
         f"B2B sağlayıcıları MediWay'e üye olmaya ikna et. "
-        f"Özgün ol, daha önce ürettiklerini tekrarlama.{learning}"
+        f"Özgün ol, daha önce ürettiklerini tekrarlama.\n"
+        f"BU İÇERİĞİN HOOK STİLİ: {chosen_hook}{learning}"
     )
 
     last_error = None
