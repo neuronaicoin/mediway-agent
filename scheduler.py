@@ -47,7 +47,7 @@ INTERVAL_HOURS = PLAN["check_interval_hours"]  # 4
 CROSS_FB = PLAN["cross_post_facebook"]       # True
 
 # Örnek videolar (Reels için) — klasördeki .mp4'ler
-SAMPLE_VIDEOS = sorted(glob.glob("*video.mp4")) or sorted(glob.glob("*.mp4"))
+# Reels artık sıfırdan animasyonla üretiliyor — örnek video gerekmez
 
 
 def log(msg):
@@ -94,16 +94,13 @@ def do_one_post(state, perf_summary):
         return bool(ig_id)
 
     else:  # reels
-        if not SAMPLE_VIDEOS:
-            log("  ⚠️  Reels için örnek video yok (klasöre .mp4 koy). Atlanıyor.")
-            return False
-        sample = random.choice(SAMPLE_VIDEOS)
         screen_text = content.get("screen_text", "")
+        subtitle = "Sağlık Turizmi"
         out_video = f"reel_{int(time.time())}.mp4"
         os.makedirs("output_videos", exist_ok=True)
         out_path = os.path.join("output_videos", out_video)
-        reel_maker.make_reel(sample, screen_text, out_path)
-        log(f"  Reel videosu üretildi: {out_path}")
+        reel_maker.make_reel(screen_text, out_path, subtitle=subtitle)
+        log(f"  Animasyonlu reel üretildi: {out_path}")
         ig_id = publisher.publish_reel(out_path, caption)
         if CROSS_FB and ig_id:
             publisher.publish_to_facebook(caption, video_path=out_path)
