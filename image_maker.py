@@ -62,7 +62,7 @@ def strip_emoji(text):
     return "\n".join(ln for ln in lines).strip()
 
 BRAND = {
-    "bg_color": (45, 80, 140),       # açık lacivert
+    "bg_color": (15, 32, 47),        # koyu lacivert (kurumsal)
     "accent_color": (245, 197, 24),  # sarı vurgu
     "text_color": (255, 255, 255),   # beyaz
     "size": (1080, 1080),            # carousel kare
@@ -82,33 +82,73 @@ def make_slide(text, filename, slide_num=None, total=None):
 
     text = strip_emoji(text)
 
+    # Kenarlardan güvenli boşluk (padding) — metin asla kenara değmez
+    SIDE_PADDING = 90
+    max_text_width = W - (SIDE_PADDING * 2)
+
+    def wrap_by_pixels(txt, font):
+        """Gerçek piksel genişliğine göre sar — kelimeler kenardan taşmaz."""
+        out = []
+        for para in txt.split("\n"):
+            if para.strip() == "":
+                out.append("")
+                continue
+            words = para.split()
+            cur = ""
+            for w in words:
+                test = (cur + " " + w).strip()
+                if draw.textlength(test, font=font) <= max_text_width:
+                    cur = test
+                else:
+                    if cur:
+                        out.append(cur)
+                    cur = w
+            if cur:
+                out.append(cur)
+        return out
+
+    # Başlangıç font boyutu (metin uzunluğuna göre)
     char_count = len(text)
     if char_count < 60:
-        font_size = 64
+        font_size = 72
     elif char_count < 120:
-        font_size = 52
+        font_size = 60
     else:
-        font_size = 42
-    font = ImageFont.truetype(FONT_BOLD, font_size)
+        font_size = 50
 
-    wrap_width = max(18, int(W / (font_size * 0.62)))
-    # Newline'lara saygı duy: her paragrafı ayrı sar
-    lines = []
-    for para in text.split("\n"):
-        if para.strip() == "":
-            lines.append("")
-        else:
-            lines.extend(textwrap.wrap(para, width=wrap_width))
-    line_height = font_size + 18
-    total_text_h = len(lines) * line_height
+    # Otomatik küçültme: metin yüksekliği veya genişliği sığmıyorsa font'u düşür
+    while font_size >= 30:
+        font = ImageFont.truetype(FONT_BOLD, font_size)
+        lines = wrap_by_pixels(text, font)
+        line_height = font_size + 18
+        total_text_h = len(lines) * line_height
+        # En geniş satır gerçekten sığıyor mu + dikey sığıyor mu?
+        widest = max((draw.textlength(l, font=font) for l in lines if l), default=0)
+        if total_text_h <= (H - 200) and widest <= max_text_width:
+            break
+        font_size -= 4
+
     y = (H - total_text_h) // 2
 
+    # İlk dolu satır = BAŞLIK (sarı + büyük). Gerisi = beyaz açıklama.
+    # Senin eski tarzın: vurucu sarı başlık + altında beyaz cümle.
+    title_done = False
+    title_font = ImageFont.truetype(FONT_BOLD, int(font_size * 1.15))
     for line in lines:
-        bbox = draw.textbbox((0, 0), line, font=font)
-        line_w = bbox[2] - bbox[0]
-        x = (W - line_w) // 2 - bbox[0]
-        draw.text((x, y), line, font=font, fill=BRAND["text_color"])
-        y += line_height
+        if line.strip() and not title_done:
+            # Başlık satırı: sarı, biraz daha büyük
+            tb = draw.textbbox((0, 0), line, font=title_font)
+            tw = tb[2] - tb[0]
+            tx = (W - tw) // 2 - tb[0]
+            draw.text((tx, y), line, font=title_font, fill=BRAND["accent_color"])
+            y += int(line_height * 1.25)
+            title_done = True
+        else:
+            bbox = draw.textbbox((0, 0), line, font=font)
+            line_w = bbox[2] - bbox[0]
+            x = (W - line_w) // 2 - bbox[0]
+            draw.text((x, y), line, font=font, fill=BRAND["text_color"])
+            y += line_height
 
     small_font = ImageFont.truetype(FONT_REG, 32)
     handle = BRAND["handle"]
