@@ -78,8 +78,11 @@ def do_one_post(state, perf_summary):
     caption = content.get("caption", "")
 
     if post_type == "carousel":
-        # Slaytları görsele bas
-        files = image_maker.make_carousel(content["slides"], prefix=f"car_{int(time.time())}")
+        # Slayt sayısını 4'e sınırla (AI bazen fazla üretebilir)
+        slides = content["slides"][:4]
+        # Boş/geçersiz slaytları ele
+        slides = [s for s in slides if s.get("text", "").strip()]
+        files = image_maker.make_carousel(slides, prefix=f"car_{int(time.time())}")
         log(f"  {len(files)} slayt görseli üretildi.")
         ig_id = publisher.publish_carousel(files, caption)
         if CROSS_FB and ig_id:
