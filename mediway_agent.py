@@ -49,7 +49,7 @@ from datetime import datetime
 # ----------------------------------------------------------------
 
 # Instagram Business Account ID — bugün bunu bulduk, gizli değil.
-IG_USER_ID = "17841414815930110"
+IG_USER_ID = os.environ.get("IG_USER_ID", "17841414815930110")
 
 # Token environment variable'dan okunur (koda asla yazma!)
 ACCESS_TOKEN = os.environ.get("IG_TOKEN")
@@ -104,8 +104,58 @@ def get_account_info():
 # ----------------------------------------------------------------
 # 2) GEÇMİŞ GÖNDERİLERİ ÇEK
 # ----------------------------------------------------------------
+def get_best_hours(top_n=6):
+    """
+    Takipçilerin en aktif olduğu saatleri döner (0-23 arası saat listesi).
+    Instagram 'online_followers' insight'ından hesaplar.
+    Veri yoksa boş liste döner (agent normal saatte yayınlar).
+    Not: Hesabın az takipçisi varsa Instagram bu veriyi vermez — normal.
+    """
+    try:
+        data = api_get(f"{IG_USER_ID}/insights", {
+            "metric": "online_followers",
+            "period": "lifetime",
+        })
+        if not data or "data" not in data or not data["data"]:
+            return []
+        values = data["data"][0].get("values", [])
+        if not values:
+            return []
+        # Son günün saat-bazlı aktiflik haritası: {saat: takipçi_sayısı}
+        hourly = values[-1].get("value", {})
+        if not hourly:
+            return []
+        # En aktif top_n saati seç
+        sorted_hours = sorted(hourly.items(), key=lambda kv: -kv[1])
+        best = [int(h) for h, _ in sorted_hours[:top_n]]
+        return sorted(best)
+    except Exception:
+        return []
+
+
+def get_media_insights(media_id, media_type):
+    """
+    Bir gönderinin GERÇEK performans verisini çeker (Insights API).
+    reach (erişim), saved (kaydetme), shares (paylaşma), views.
+    Kaydetme ve paylaşma, algoritma için beğeniden çok daha değerlidir.
+    """
+    # Medya tipine göre uygun metrikler (Reels farklı metrik ister)
+    if media_type == "VIDEO":
+        metrics = "reach,saved,shares,likes,comments,views"
+    else:
+        metrics = "reach,saved,shares,likes,comments"
+    data = api_get(f"{media_id}/insights", {"metric": metrics})
+    out = {}
+    if data and "data" in data:
+        for m in data["data"]:
+            name = m.get("name")
+            vals = m.get("values", [{}])
+            out[name] = vals[0].get("value", 0) if vals else 0
+    return out
+
+
 def get_recent_media(limit=25):
-    """Son gönderileri ve performanslarını çeker."""
+    """Son gönderileri ve GERÇEK performanslarını (insights) çeker."""
     print("\n📷 SON GÖNDERİLER")
     print("-" * 50)
     data = api_get(
@@ -119,7 +169,17 @@ def get_recent_media(limit=25):
         return []
 
     posts = data["data"]
-    print(f"  Toplam {len(posts)} gönderi çekildi.\n")
+    # Her gönderiye gerçek insights ekle (reach, saved, shares)
+    for p in posts:
+        try:
+            ins = get_media_insights(p["id"], p.get("media_type", ""))
+            p["reach"] = ins.get("reach", 0)
+            p["saved"] = ins.get("saved", 0)
+            p["shares"] = ins.get("shares", 0)
+            p["views"] = ins.get("views", 0)
+        except Exception:
+            p["reach"] = p["saved"] = p["shares"] = p["views"] = 0
+    print(f"  Toplam {len(posts)} gönderi çekildi (gerçek insights ile).\n")
     return posts
 
 
