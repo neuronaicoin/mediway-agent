@@ -100,6 +100,14 @@ DOĞRU yaklaşım: pozitif fırsat dili. Örnekler:
 - "Markanızı dünya sahnesine taşıyın"
 - "Komisyon yok — gelen hasta tamamen sizin"
 
+# SLAYT METNİ KURALI (ÇOK ÖNEMLİ — KISA VE VURUCU)
+Her carousel slaytı KISA olmalı. Görsele sığması ve okunması için:
+- Her slayt: VURUCU BİR BAŞLIK (1-3 kelime, BÜYÜK HARFLE) + altında TEK kısa cümle (en fazla 8-10 kelime).
+- Başlık ile cümleyi ayırmak için araya \n koy. Örnek slayt:
+  "ESTETİK\nYabancı hastalar sizi arıyor ama bulamıyor."
+- Uzun paragraf, çok cümle, çok satır YAZMA. Slaytı kalabalıklaştırma.
+- Toplam bir slayt 12 kelimeyi geçmesin. Kısa = güçlü = okunur.
+
 # ZORUNLU: SİTE ADRESİ
 Her caption'ın ve her story metninin SONUNA mutlaka şunu ekle (hashtag'lerden önce):
 www.mediwayturkey.com
@@ -112,7 +120,8 @@ Sadece geçerli JSON döndür, başka hiçbir şey yazma (markdown backtick yok,
 İstenen post tipine göre şu şemalardan biri:
 
 CAROUSEL:
-{{"type":"CAROUSEL","slides":[{{"slide":1,"text":"hook"}},{{"slide":2,"text":"problem"}},{{"slide":3,"text":"çözüm + faydalar"}},{{"slide":4,"text":"eyleme çağrı"}}],"caption":"açıklama metni + en fazla 4 hashtag"}}
+{{"type":"CAROUSEL","slides":[{{"slide":1,"text":"BAŞLIK\nkısa tek cümle hook"}},{{"slide":2,"text":"BAŞLIK\nkısa problem cümlesi"}},{{"slide":3,"text":"BAŞLIK\nkısa çözüm cümlesi"}},{{"slide":4,"text":"BAŞLIK\nkısa eyleme çağrı"}}],"caption":"açıklama metni + en fazla 4 hashtag"}}
+Her slayt "text" alanı: BÜYÜK HARF BAŞLIK + \n + en fazla 8-10 kelimelik tek cümle. KISA TUT.
 
 REELS:
 {{"type":"REELS","screen_text":"videonun üstüne basılacak kısa güçlü metin (max ~80 karakter)","caption":"açıklama + eyleme çağrı + en fazla 4 hashtag"}}
