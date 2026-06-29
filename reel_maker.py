@@ -32,7 +32,7 @@ def _find_font():
 
 
 FONT_BOLD = _find_font()
-BG_COLOR = "0x2d508c"
+BG_COLOR = "0x0f202f"
 ACCENT = "0xf5c518"
 WHITE = "white"
 W, H = 1080, 1920
@@ -59,22 +59,46 @@ def make_reel(screen_text, output_path, subtitle=None):
     if out_dir:
         os.makedirs(out_dir, exist_ok=True)
 
-    lines = _wrap(_escape(screen_text), width=18)
+    # Metni başlık ve açıklama olarak ayır: "BAŞLIK\naçıklama cümlesi"
+    # İlk satır = sarı büyük başlık, gerisi = beyaz açıklama (carousel ile aynı tarz)
+    raw_parts = screen_text.split("\n", 1)
+    title_part = _escape(raw_parts[0].strip())
+    body_part = raw_parts[1].strip() if len(raw_parts) > 1 else ""
+
+    title_lines = _wrap(title_part, width=16)
+    body_lines = _wrap(_escape(body_part), width=18) if body_part else []
+
     filters = [f"drawbox=x=0:y=0:w={W}:h=14:color={ACCENT}:t=fill"]
 
-    n = len(lines)
-    line_h = 130
-    total_h = n * line_h
+    TITLE_SIZE = 100
+    BODY_SIZE = 70
+    title_h = 150
+    body_h = 110
+    total_h = len(title_lines) * title_h + len(body_lines) * body_h
     start_y = (H // 2) - (total_h // 2) - 60
 
-    for i, line in enumerate(lines):
-        delay = 0.3 + i * 0.35
-        y = start_y + i * line_h
+    idx = 0
+    y_cursor = start_y
+    # Başlık satırları — SARI, büyük
+    for line in title_lines:
+        delay = 0.3 + idx * 0.35
         filters.append(
             f"drawtext=fontfile={FONT_BOLD}:text='{line}':"
-            f"fontcolor={WHITE}:fontsize=88:x=(w-text_w)/2:y={y}:"
+            f"fontcolor={ACCENT}:fontsize={TITLE_SIZE}:x=(w-text_w)/2:y={y_cursor}:"
             f"alpha='if(lt(t,{delay}),0,if(lt(t,{delay+0.5}),(t-{delay})/0.5,1))'"
         )
+        y_cursor += title_h
+        idx += 1
+    # Açıklama satırları — BEYAZ
+    for line in body_lines:
+        delay = 0.3 + idx * 0.35
+        filters.append(
+            f"drawtext=fontfile={FONT_BOLD}:text='{line}':"
+            f"fontcolor={WHITE}:fontsize={BODY_SIZE}:x=(w-text_w)/2:y={y_cursor}:"
+            f"alpha='if(lt(t,{delay}),0,if(lt(t,{delay+0.5}),(t-{delay})/0.5,1))'"
+        )
+        y_cursor += body_h
+        idx += 1
 
     if subtitle:
         sub = _escape(subtitle)
