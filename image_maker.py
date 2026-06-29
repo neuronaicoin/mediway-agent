@@ -62,7 +62,7 @@ def strip_emoji(text):
     return "\n".join(ln for ln in lines).strip()
 
 BRAND = {
-    "bg_color": (15, 32, 47),        # koyu lacivert
+    "bg_color": (45, 80, 140),       # açık lacivert
     "accent_color": (245, 197, 24),  # sarı vurgu
     "text_color": (255, 255, 255),   # beyaz
     "size": (1080, 1080),            # carousel kare
