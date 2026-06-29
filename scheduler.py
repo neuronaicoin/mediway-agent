@@ -36,6 +36,7 @@ import image_maker
 import reel_maker
 import publisher
 import learning_loop
+import mediway_agent
 
 # Anayasadan limitler
 PLAN = CONSTITUTION["publishing_plan"]
@@ -162,10 +163,27 @@ def run_cycle():
 
     # 2) Limit kontrolü + yayın
     if state.get("published_today", 0) < MAX_POSTS:
+        # OPTIMAL SAAT KONTROLÜ (Aşama 3): kötü saatte ve vakit varsa ertele
+        should_post = True
         try:
-            do_one_post(state, perf_summary)
+            best_hours = mediway_agent.get_best_hours(top_n=8)
+            current_hour = datetime.now().hour
+            remaining_posts = MAX_POSTS - state.get("published_today", 0)
+            remaining_cycles = max(1, (24 - current_hour) // INTERVAL_HOURS)
+            if best_hours and current_hour not in best_hours:
+                if remaining_cycles > remaining_posts:
+                    should_post = False
+                    log(f" ⏰ Şu an ({current_hour}:00) kitle az aktif. "
+                        f"Aktif saatler: {best_hours}. Paylaşım ertelendi.")
         except Exception as e:
-            log(f" ⚠️  Paylaşım hatası: {e}")
+            log(f" ⏰ Saat kontrolü atlandı: {e}")
+            should_post = True
+
+        if should_post:
+            try:
+                do_one_post(state, perf_summary)
+            except Exception as e:
+                log(f" ⚠️  Paylaşım hatası: {e}")
     else:
         log(" Paylaşım limiti dolu — bu döngüde sadece story/analiz.")
 
