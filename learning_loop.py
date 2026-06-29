@@ -70,7 +70,15 @@ def build_performance_summary():
     for p in posts:
         likes = p.get("like_count", 0) or 0
         comments = p.get("comments_count", 0) or 0
-        p["engagement"] = likes + comments
+        saved = p.get("saved", 0) or 0
+        shares = p.get("shares", 0) or 0
+        reach = p.get("reach", 0) or 0
+        # AKILLI SKOR: kaydetme ve paylaşma algoritma için en değerli.
+        # saved x3, shares x4 (en güçlü sinyal), comments x2, likes x1
+        p["engagement"] = likes + comments * 2 + saved * 3 + shares * 4
+        p["reach"] = reach
+        # Erişime göre oran (küçük hesap büyük hesapla adil karşılaştırılsın)
+        p["save_rate"] = (saved / reach) if reach > 0 else 0
 
     # Medya tipine göre ortalama
     types = {}
@@ -84,14 +92,24 @@ def build_performance_summary():
     best_caption = (best.get("caption") or "")[:120]
 
     # Özet metni (Claude'a girdi)
-    lines = ["Son gönderi performansı:"]
+    lines = ["Son gönderi performansı (gerçek Instagram verisi):"]
     for t, avg in sorted(type_avgs.items(), key=lambda kv: -kv[1]):
-        lines.append(f"- {t}: ortalama {avg:.1f} etkileşim")
+        lines.append(f"- {t}: ortalama {avg:.1f} ağırlıklı skor (kaydetme/paylaşma öncelikli)")
+
+    # Toplam gerçek metrikler
+    total_reach = sum(p.get("reach", 0) for p in posts)
+    total_saved = sum(p.get("saved", 0) for p in posts)
+    total_shares = sum(p.get("shares", 0) for p in posts)
+    lines.append(f"Toplam erişim: {total_reach}, kaydetme: {total_saved}, paylaşma: {total_shares}")
+
     if best["engagement"] > 0:
-        lines.append(f"En çok tutan gönderi ({best['engagement']} etkileşim) şu tarzdaydı: \"{best_caption}\"")
-        lines.append("Bu tarzı/konuyu çoğalt.")
+        lines.append(
+            f"EN ÇOK TUTAN gönderi (skor {best['engagement']}, "
+            f"{best.get('saved',0)} kaydetme, {best.get('shares',0)} paylaşma) şu tarzdaydı: \"{best_caption}\""
+        )
+        lines.append("Bu konuyu/tarzı/hook'u ÇOĞALT — kaydedilesi ve paylaşılası içerik üret.")
     else:
-        lines.append("Henüz güçlü tutan içerik yok — yeni açılar/hook'lar dene.")
+        lines.append("Henüz güçlü tutan içerik yok — farklı açılar, daha çarpıcı hook'lar dene.")
 
     return "\n".join(lines)
 
@@ -104,7 +122,11 @@ def best_performing_format():
     if not posts:
         return None
     for p in posts:
-        p["engagement"] = (p.get("like_count", 0) or 0) + (p.get("comments_count", 0) or 0)
+        likes = p.get("like_count", 0) or 0
+        comments = p.get("comments_count", 0) or 0
+        saved = p.get("saved", 0) or 0
+        shares = p.get("shares", 0) or 0
+        p["engagement"] = likes + comments * 2 + saved * 3 + shares * 4
     types = {}
     for p in posts:
         t = p.get("media_type", "")
