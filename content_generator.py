@@ -78,6 +78,38 @@ HASHTAGS = [
     "#hairtransplantturkey", "#sağlıkkuruluşu", "#plastikcerrahi",
 ]
 
+# ----------------------------------------------------------------
+# STORY'YE ÖZEL HAVUZ — carousel/reels'ten AYRI, çok daha geniş.
+# Farklı ÜSLUP'lar karışık: soru / istatistik / sorun / fayda / fırsat.
+# Günde 5 story üretildiği için bu havuz özellikle geniş tutuldu.
+# ----------------------------------------------------------------
+STORY_HOOKS = [
+    "Bir hasta şimdi '{search}' diye arasa, sizi bulur mu?",
+    "{city_loc} {treatment} yapan onlarca sağlayıcı var. Hasta neden sizi seçsin?",
+    "Yılda yüz binlerce yabancı hasta Türkiye'yi araştırıyor. Siz o listede misiniz?",
+    "{target_cap} harika. Ama görünmüyorsanız, hastanın haberi bile olmaz.",
+    "Rakibiniz o aramada çıkıyor. Siz nerede?",
+    "Reklam bitince trafik de biter. Kalıcı görünürlük farklı bir şey.",
+    "Bir yabancı hasta bu ay {treatment} için karar veriyor olabilir. Sizi görebilir mi?",
+    "Aracı yok, komisyon yok. Sadece doğrudan hasta.",
+    "{city_loc} en iyisi olabilirsiniz. Ama 'en bulunabilir' olan kazanıyor.",
+    "Bugün kaç yabancı hasta sizi aradı, biliyor musunuz?",
+    "Görünürlük artık tesadüf değil, bir tercih.",
+    "Erken üye olanlar öne çıkıyor. Siz de olabilirsiniz.",
+    "Hasta sizi Google'da değil, AI arama motorlarında da arıyor artık.",
+    "{target_cap} için en büyük fırsat, doğru zamanda görünür olmak.",
+    "Bir hasta karar verdiğinde, listenin neresindesiniz?",
+]
+
+STORY_CLOSERS = [
+    "Üye ol, link bio'da",
+    "Yerinizi alın 👉 link bio'da",
+    "mediwayturkey.com'da yerinizi alın",
+    "Hemen katılın 👉 link bio'da",
+    "Erken üye avantajından yararlanın 👉 link bio'da",
+    "Görünür olun 👉 mediwayturkey.com",
+]
+
 # Güvenlik ağı (şablon için)
 FORBIDDEN = ["ücretsiz", "bedava", "free", "ücretsizdir", "14 dil", "klinik",
              "malı katlıyor", "kapına", "tüm gelir senin",
@@ -130,9 +162,14 @@ def _template_post(post_type="carousel"):
             "caption": f"{body}\n\n{cta}\n\nwww.mediwayturkey.com\n\n{tags}",
         }
     else:  # story
+        story_hook = random.choice(STORY_HOOKS).format(
+            city=city, city_loc=city_loc, treatment=treatment,
+            target_cap=target.capitalize(), search=search,
+        )
+        story_closer = random.choice(STORY_CLOSERS)
         content = {
             "type": "STORY",
-            "screen_text": f"{hook}\n\nÜye ol, link bio'da\nwww.mediwayturkey.com",
+            "screen_text": f"{story_hook}\n\n{story_closer}\nwww.mediwayturkey.com",
         }
 
     ok, _ = check_rules(str(content))
